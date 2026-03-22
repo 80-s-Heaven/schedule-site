@@ -4,39 +4,126 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>80's Heaven - Weekly Schedule</title>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 body {
-  margin:0; font-family:'Press Start 2P', cursive, Arial, sans-serif;
+  margin:0;
+  font-family:'Press Start 2P', cursive, Arial, sans-serif;
   background: radial-gradient(circle at top left, #ff00cc, #6600ff, #000);
-  color:white; text-align:center;
+  color:white;
+  text-align:center;
+  overflow-x:hidden;
 }
-header { padding:10px; font-size:18px; text-shadow:0 0 5px #ff00cc,0 0 10px #ff00cc,0 0 20px #ff00cc; }
-.tabs { display:flex; justify-content:center; margin:10px 0; flex-wrap:wrap; }
-.tab { padding:7px 14px; margin:2px; cursor:pointer; border:2px solid #ff00cc; border-radius:4px;
-  font-size:17px; text-decoration:none; color:white; display:inline-block; position:relative;
-}
-.tab.active { background:#ff00cc; color:#000; }
-.tab:hover { box-shadow:0 0 15px #ff00cc; transform:scale(1.05); }
 
-.schedule-grid { display:grid; gap:8px; width:98%; margin:0 auto 10px auto; }
-.show-card {
-  background:rgba(255,255,255,.05); border:2px solid #ff00cc; border-radius:6px;
-  padding:4px; display:flex; flex-direction:column; align-items:center; min-height:130px;
-  text-align:center; transition:opacity .5s, transform .5s; opacity:0; transform:translateY(10px);
+header {
+  padding:10px;
+  font-size:18px;
+  letter-spacing:1.5px;
+  text-shadow:0 0 5px #ff00cc,0 0 10px #ff00cc,0 0 20px #ff00cc;
 }
-.show-card img { width:80px; height:80px; border-radius:50%; border:2px solid #ff00cc; object-fit:cover; margin-bottom:4px; }
-.show-card .time { font-size:10px; margin-bottom:2px; }
-.show-card .name { font-size:10px; margin:0; word-break:break-word; }
+
+.tabs {
+  display:flex;
+  justify-content:center;
+  margin:10px 0;
+  flex-wrap:wrap;
+}
+
+.tab {
+  padding:7px 14px;
+  margin:2px;
+  cursor:pointer;
+  border:2px solid #ff00cc;
+  border-radius:4px;
+  text-shadow:0 0 5px #ff00cc;
+  font-size:17.5px;
+  transition:all .3s ease;
+}
+
+.tab.active {
+  background:#ff00cc;
+  color:#000;
+  box-shadow:0 0 10px #ff00cc;
+}
+
+.tab:hover {
+  box-shadow:0 0 15px #ff00cc,0 0 30px #ff00cc;
+  transform:scale(1.05);
+}
+
+.schedule-grid {
+  display:grid;
+  gap:8px;
+  width:98%;
+  margin:0 auto 10px auto;
+}
+
+/* Cards */
+.show-card {
+  background:rgba(255,255,255,.05);
+  border:2px solid #ff00cc;
+  border-radius:6px;
+  padding:4px;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:130px;
+  text-align:center;
+  transition:opacity .5s ease, transform .5s ease;
+  opacity:0;
+  transform:translateY(10px);
+}
+
+.show-card img {
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  border:2px solid #ff00cc;
+  object-fit:cover;
+  margin-bottom:4px;
+}
+
+.show-card .time {
+  font-size:10px;
+  margin-bottom:2px;
+}
+
+.show-card .name {
+  font-size:10px;
+  margin:0;
+  word-break:break-word;
+}
 
 /* ON AIR */
-.show-card.on-air { border-color:red; box-shadow:0 0 10px red,0 0 20px red; position:relative; }
-.show-card.on-air::before { content:"ON AIR"; position:absolute; top:4px; left:4px; font-size:16px; font-weight:bold; animation:flashText 1s infinite; }
-@keyframes flashText { 0%,100%{color:red;} 50%{color:white;} }
+.show-card.on-air {
+  border-color:red;
+  box-shadow:0 0 10px red,0 0 20px red;
+}
 
-.show-card.invisible { display:none; opacity:1; transform:translateY(0); }
+.show-card.on-air::before {
+  content:"ON AIR";
+  position:absolute;
+  top:4px;
+  left:4px;
+  font-size:16px;
+  font-weight:bold;
+  animation:flashText 1s infinite;
+}
 
+@keyframes flashText {
+  0%,100% { color:red; }
+  50% { color:white; }
+}
+
+.show-card.invisible {
+  display:none;
+}
+
+/* Responsive columns */
 @media (min-width:1200px){ .schedule-grid{grid-template-columns:repeat(4,1fr);} }
 @media (min-width:900px) and (max-width:1199px){ .schedule-grid{grid-template-columns:repeat(3,1fr);} }
 @media (min-width:600px) and (max-width:899px){ .schedule-grid{grid-template-columns:repeat(2,1fr);} }
@@ -44,18 +131,19 @@ header { padding:10px; font-size:18px; text-shadow:0 0 5px #ff00cc,0 0 10px #ff0
 
 </style>
 </head>
+
 <body>
 
 <header>80's Heaven – Weekly Schedule</header>
 
 <div class="tabs">
-<a class="tab" href="#" data-day="Sunday">Sunday</a>
-<a class="tab" href="#" data-day="Monday">Monday</a>
-<a class="tab" href="#" data-day="Tuesday">Tuesday</a>
-<a class="tab" href="#" data-day="Wednesday">Wednesday</a>
-<a class="tab" href="#" data-day="Thursday">Thursday</a>
-<a class="tab" href="#" data-day="Friday">Friday</a>
-<a class="tab" href="#" data-day="Saturday">Saturday</a>
+  <div class="tab" data-day="Sunday">Sunday</div>
+  <div class="tab" data-day="Monday">Monday</div>
+  <div class="tab" data-day="Tuesday">Tuesday</div>
+  <div class="tab" data-day="Wednesday">Wednesday</div>
+  <div class="tab" data-day="Thursday">Thursday</div>
+  <div class="tab" data-day="Friday">Friday</div>
+  <div class="tab" data-day="Saturday">Saturday</div>
 </div>
 
 <div id="scheduleGrid" class="schedule-grid"></div>
@@ -63,17 +151,21 @@ header { padding:10px; font-size:18px; text-shadow:0 0 5px #ff00cc,0 0 10px #ff0
 <script>
 // Helpers
 function placeholder(name){
-  if(name.toUpperCase()==="MARK WILLIAMS") return `https://ui-avatars.com/api/?name=MW&background=ff00cc&color=ffffff&size=128`;
-  const initials = name.split(" ").map(n=>n[0]).join("").substring(0,2);
+  const initials=name.split(" ").map(n=>n[0]).join("").substring(0,2);
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=ff00cc&color=ffffff&size=128`;
 }
+
 function getPresenterImage(name){
   const fileName=name.toLowerCase().replace(/\s+/g,'-');
   return `images/${fileName}.jpg`;
 }
-function toMinutes(hhmm){ const [h,m]=hhmm.split(":").map(Number); return h*60+m; }
 
-// Full schedule
+function toMinutes(hhmm){
+  const [h,m]=hhmm.split(":").map(Number);
+  return h*60+m;
+}
+
+// Schedule
 const schedule = {
 "Saturday":[["00:00","NON STOP 80'S HEAVEN"],["08:00","NIK MARTIN"],["09:00","MARK WILLIAMS"],["11:00","NEALE JAMES"],["12:00","EMPEROR ROSKO"],["13:00","ADRIAN JUSTE"],["14:00","PAUL JORDAN"],["15:00","GRAHAM BANNERMAN"],["16:00","DIXIE PEACH"],["17:00","STEVE BLACKNELL"],["18:00","ROB DE MINK"],["19:00","MARK WILLIAMS"],["21:00","MIKE HOLLIS"],["22:00","NON STOP 80'S HEAVEN"]],
 "Sunday":[["00:00","NON STOP 80'S HEAVEN"],["09:00","MARK WILLIAMS"],["11:00","GAVIN MCCOY"],["12:00","DAVE ASHER"],["13:00","TONY WEST"],["14:00","OPAL BONFANTE"],["15:00","NINO FIRETTO"],["16:00","MARTIN BUCHANAN"],["17:00","HOWARD PEARCE"],["18:00","ALTON ANDREWS"],["19:00","MARK WILLIAMS"],["21:00","TONY BLEWITT"],["22:00","NON STOP 80'S HEAVEN"]],
@@ -87,57 +179,65 @@ const schedule = {
 const weekdays=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const grid=document.getElementById("scheduleGrid");
 const allCards={};
-let selectedDay=weekdays[new Date().getDay()];
 
-// Render cards
+// Render Cards
 weekdays.forEach(day=>{
   allCards[day]=[];
-  (schedule[day]||[]).forEach(show=>{
+  schedule[day].forEach(show=>{
     const card=document.createElement("div");
-    card.className="show-card";
-    const time=document.createElement("div"); time.className="time"; time.textContent=show[0];
-    const img=document.createElement("img"); img.src=getPresenterImage(show[1]); img.onerror=()=>img.src=placeholder(show[1]);
-    const name=document.createElement("div"); name.className="name"; name.textContent=show[1];
+    card.className="show-card invisible";
+
+    const time=document.createElement("div");
+    time.className="time";
+    time.textContent=show[0];
+
+    const img=document.createElement("img");
+    img.onerror=()=>img.src=placeholder(show[1]);
+    img.src=getPresenterImage(show[1]);
+
+    const name=document.createElement("div");
+    name.className="name";
+    name.textContent=show[1];
+
     card.append(time,img,name);
     grid.appendChild(card);
     allCards[day].push(card);
   });
 });
 
-// Show day + ON AIR logic
+// Show Day
 function showDay(day){
-  const now=new Date();
-  const currentMinutes=now.getHours()*60+now.getMinutes();
-  weekdays.forEach(d=>allCards[d].forEach(c=>c.classList.add("invisible")));
+  weekdays.forEach(d=>{
+    allCards[d].forEach(c=>{
+      c.classList.add("invisible");
+      c.classList.remove("on-air");
+    });
+  });
+
   allCards[day].forEach((c,i)=>{
     c.classList.remove("invisible");
-    c.classList.remove("on-air");
-    const show=schedule[day][i];
-    if(day===weekdays[now.getDay()]){
-      const start=toMinutes(show[0]);
-      const end=i+1<schedule[day].length?toMinutes(schedule[day][i+1][0]):1440;
-      if(currentMinutes>=start && currentMinutes<end) c.classList.add("on-air");
-    }
+    setTimeout(()=>{
+      c.style.opacity=1;
+      c.style.transform="translateY(0)";
+    },i*40);
   });
 }
 
-// Tab click events
+// Tabs
 document.querySelectorAll(".tab").forEach(tab=>{
-  tab.addEventListener("click", e=>{
-    e.preventDefault();
+  tab.addEventListener("click",()=>{
     document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
     tab.classList.add("active");
     showDay(tab.dataset.day);
   });
 });
 
-// Initialize
-document.querySelector(`.tab[data-day="${selectedDay}"]`)?.classList.add("active");
-showDay(selectedDay);
-
-// Live update every 15s
-setInterval(()=>showDay(selectedDay),15000);
+// Auto select today
+const todayName=weekdays[new Date().getDay()];
+document.querySelector(`.tab[data-day="${todayName}"]`).classList.add("active");
+showDay(todayName);
 
 </script>
 </body>
 </html>
+
