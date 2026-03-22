@@ -187,6 +187,7 @@ const schedule = {
 const weekdays=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const grid=document.getElementById("scheduleGrid");
 const allCards={};
+let currentDay = weekdays[new Date().getDay()];
 
 /* Render Cards */
 weekdays.forEach(day=>{
@@ -215,6 +216,8 @@ weekdays.forEach(day=>{
 
 /* Show Day Function */
 function showDay(day){
+  currentDay = day;
+
   weekdays.forEach(d=>{
     allCards[d].forEach(c=>{
       c.classList.add("invisible");
@@ -227,38 +230,40 @@ function showDay(day){
     setTimeout(()=>{
       c.style.opacity=1;
       c.style.transform="translateY(0)";
-    },i*40);
+    }, i*40);
   });
 
-  updateNowNext(day);
+  updateNowNext();
 }
 
 /* Now / Next */
-function updateNowNext(selectedDay){
-  const now=new Date();
-  const todayName = selectedDay || weekdays[now.getDay()];
-  const currentMinutes=now.getHours()*60+now.getMinutes();
-  const shows=schedule[todayName];
+function updateNowNext(){
+  const now = new Date();
+  const todayName = currentDay;
+  const currentMinutes = now.getHours()*60 + now.getMinutes();
+  const shows = schedule[todayName];
 
-  let currentShow=null,nextShow=null;
+  let currentShow = null, nextShow = null;
 
   shows.forEach((s,i)=>{
-    const start=toMinutes(s[0]);
-    const end=i+1<shows.length?toMinutes(shows[i+1][0]):1440;
-    if(currentMinutes>=start && currentMinutes<end){
-      currentShow=s;
-      nextShow=shows[i+1]||schedule[weekdays[(weekdays.indexOf(todayName)+1)%7]][0];
+    const start = toMinutes(s[0]);
+    const end = i+1 < shows.length ? toMinutes(shows[i+1][0]) : 1440;
+    if(currentMinutes >= start && currentMinutes < end){
+      currentShow = s;
+      nextShow = shows[i+1] || schedule[weekdays[(weekdays.indexOf(todayName)+1)%7]][0];
     }
   });
 
   if(currentShow){
-    document.getElementById("nowNext").textContent=
+    document.getElementById("nowNext").textContent =
       `Now Playing: ${currentShow[1]} | Next: ${nextShow[1]} at ${nextShow[0]}`;
+  } else {
+    document.getElementById("nowNext").textContent = "";
   }
 
-  allCards[todayName].forEach(c=>c.classList.remove("on-air"));
-  const index=shows.findIndex(s=>s[0]===currentShow?.[0]);
-  if(index>=0) allCards[todayName][index].classList.add("on-air");
+  allCards[todayName].forEach(c => c.classList.remove("on-air"));
+  const index = shows.findIndex(s => s[0] === currentShow?.[0]);
+  if(index >= 0) allCards[todayName][index].classList.add("on-air");
 }
 
 /* Tabs Click */
@@ -272,12 +277,11 @@ document.querySelectorAll(".tab").forEach(tab=>{
 });
 
 /* Auto select today */
-const todayName=weekdays[new Date().getDay()];
-document.querySelector(`.tab[data-day="${todayName}"]`)?.classList.add("active");
-showDay(todayName);
+document.querySelector(`.tab[data-day="${currentDay}"]`)?.classList.add("active");
+showDay(currentDay);
 
 /* Live update every 15s */
-setInterval(()=>updateNowNext(),15000);
+setInterval(updateNowNext,15000);
 
 </script>
 </body>
