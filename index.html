@@ -10,9 +10,11 @@ body { margin:0; font-family:'Press Start 2P', cursive, Arial, sans-serif; backg
 header { padding:10px; font-size:18px; text-shadow:0 0 5px #ff00cc,0 0 10px #ff00cc,0 0 20px #ff00cc; }
 #nowNext { margin:6px 0; font-size:12px; text-shadow:0 0 3px #00ffff; }
 .tabs { display:flex; justify-content:center; margin:10px 0; flex-wrap:wrap; }
-.tab { padding:7px 14px; margin:2px; cursor:pointer; border:2px solid #ff00cc; border-radius:4px; font-size:17px; transition:all .3s; text-decoration:none; color:white; display:inline-block; }
+.tab { padding:7px 14px; margin:2px; cursor:pointer; border:2px solid #ff00cc; border-radius:4px; font-size:17px; transition:all .3s; text-decoration:none; color:white; display:inline-block; position:relative;}
 .tab.active { background:#ff00cc; color:#000; }
 .tab:hover { box-shadow:0 0 15px #ff00cc; transform:scale(1.05); }
+.tab .on-air-indicator { content:"ON AIR"; position:absolute; top:-5px; right:-5px; background:red; color:white; font-size:10px; font-weight:bold; padding:1px 3px; border-radius:3px; animation:flashText 1s infinite; display:none;}
+@keyframes flashText { 0%,100% { color:red; } 50% { color:white; } }
 .schedule-grid { display:grid; gap:8px; width:98%; margin:0 auto 10px auto; }
 .show-card { background:rgba(255,255,255,.05); border:2px solid #ff00cc; border-radius:6px; padding:4px; display:flex; flex-direction:column; align-items:center; min-height:130px; text-align:center; transition:opacity .5s, transform .5s; opacity:0; transform:translateY(10px);}
 .show-card img { width:80px; height:80px; border-radius:50%; border:2px solid #ff00cc; object-fit:cover; margin-bottom:4px; }
@@ -20,7 +22,6 @@ header { padding:10px; font-size:18px; text-shadow:0 0 5px #ff00cc,0 0 10px #ff0
 .show-card .name { font-size:10px; margin:0; word-break:break-word; }
 .show-card.on-air { border-color:red; box-shadow:0 0 10px red,0 0 20px red; }
 .show-card.on-air::before { content:"ON AIR"; position:absolute; top:4px; left:4px; font-size:16px; font-weight:bold; animation:flashText 1s infinite; }
-@keyframes flashText { 0%,100% { color:red; } 50% { color:white; } }
 .show-card.invisible { display:none; }
 @media (min-width:1200px){ .schedule-grid{grid-template-columns:repeat(4,1fr);} }
 @media (min-width:900px) and (max-width:1199px){ .schedule-grid{grid-template-columns:repeat(3,1fr);} }
@@ -34,18 +35,19 @@ header { padding:10px; font-size:18px; text-shadow:0 0 5px #ff00cc,0 0 10px #ff0
 <div id="nowNext"></div>
 
 <div class="tabs">
-<a class="tab" href="#" data-day="Sunday">Sunday</a>
-<a class="tab" href="#" data-day="Monday">Monday</a>
-<a class="tab" href="#" data-day="Tuesday">Tuesday</a>
-<a class="tab" href="#" data-day="Wednesday">Wednesday</a>
-<a class="tab" href="#" data-day="Thursday">Thursday</a>
-<a class="tab" href="#" data-day="Friday">Friday</a>
-<a class="tab" href="#" data-day="Saturday">Saturday</a>
+<a class="tab" href="#" data-day="Sunday">Sunday<span class="on-air-indicator">ON AIR</span></a>
+<a class="tab" href="#" data-day="Monday">Monday<span class="on-air-indicator">ON AIR</span></a>
+<a class="tab" href="#" data-day="Tuesday">Tuesday<span class="on-air-indicator">ON AIR</span></a>
+<a class="tab" href="#" data-day="Wednesday">Wednesday<span class="on-air-indicator">ON AIR</span></a>
+<a class="tab" href="#" data-day="Thursday">Thursday<span class="on-air-indicator">ON AIR</span></a>
+<a class="tab" href="#" data-day="Friday">Friday<span class="on-air-indicator">ON AIR</span></a>
+<a class="tab" href="#" data-day="Saturday">Saturday<span class="on-air-indicator">ON AIR</span></a>
 </div>
 
 <div id="scheduleGrid" class="schedule-grid"></div>
 
 <script>
+// Helpers
 function placeholder(name){ 
   if(name.toUpperCase()==="MARK WILLIAMS") return `https://ui-avatars.com/api/?name=MW&background=ff00cc&color=ffffff&size=128`; 
   const initials = name.split(" ").map(n=>n[0]).join("").substring(0,2); 
@@ -54,6 +56,7 @@ function placeholder(name){
 function getPresenterImage(name){ const fileName=name.toLowerCase().replace(/\s+/g,'-'); return `images/${fileName}.jpg`; }
 function toMinutes(hhmm){ const [h,m]=hhmm.split(":").map(Number); return h*60+m; }
 
+// Schedule
 const schedule = {
 "Saturday":[["00:00","NON STOP 80'S HEAVEN"],["08:00","NIK MARTIN"],["09:00","MARK WILLIAMS"],["11:00","NEALE JAMES"]],
 "Sunday":[["00:00","NON STOP 80'S HEAVEN"],["09:00","MARK WILLIAMS"],["11:00","GAVIN MCCOY"]],
@@ -69,7 +72,7 @@ const grid=document.getElementById("scheduleGrid");
 const allCards={};
 let selectedDay=weekdays[new Date().getDay()];
 
-// render all cards
+// Render all cards
 weekdays.forEach(day=>{
   allCards[day]=[];
   schedule[day].forEach(show=>{
@@ -84,46 +87,45 @@ weekdays.forEach(day=>{
   });
 });
 
-// show day
+// Show a day
 function showDay(day){
   selectedDay=day;
-  weekdays.forEach(d=>allCards[d].forEach(c=>{ c.classList.add("invisible"); c.classList.remove("on-air"); }));
+  weekdays.forEach(d=>allCards[d].forEach(c=>c.classList.add("invisible")));
   allCards[day].forEach(c=>c.classList.remove("invisible"));
-  updateNowNext();
+  updateNowNext(); // update text if today
 }
 
-// update ON AIR
+// Update ON AIR icons and Now/Next
 function updateNowNext(){
   const now=new Date();
   const today=weekdays[now.getDay()];
-  allCards[selectedDay].forEach(c=>c.classList.remove("on-air"));
-  
-  if(selectedDay!==today){ 
-    document.getElementById("nowNext").textContent=""; 
-    return; 
-  }
+  // clear all tab indicators
+  document.querySelectorAll(".tab .on-air-indicator").forEach(ind=>ind.style.display="none");
+  // clear all cards on-air
+  weekdays.forEach(d=>allCards[d].forEach(c=>c.classList.remove("on-air")));
 
+  // find current show for today
   const shows=schedule[today];
   const minutes=now.getHours()*60+now.getMinutes();
-  let currentShow=null,nextShow=null;
-  
   for(let i=0;i<shows.length;i++){
     const start=toMinutes(shows[i][0]);
     const end=i+1<shows.length?toMinutes(shows[i+1][0]):1440;
     if(minutes>=start && minutes<end){
-      currentShow=shows[i];
-      nextShow=shows[i+1]||["00:00","NON STOP 80'S HEAVEN"];
-      allCards[today][i].classList.add("on-air");
+      // mark the card on the current selected day if it is today
+      if(selectedDay===today) allCards[today][i].classList.add("on-air");
+      // show ON AIR indicator on the correct day tab
+      document.querySelector(`.tab[data-day="${today}"] .on-air-indicator`).style.display="inline-block";
+      // Now/Next text
+      const nextShow=shows[i+1]||["00:00","NON STOP 80'S HEAVEN"];
+      document.getElementById("nowNext").textContent=`Now Playing: ${shows[i][1]} | Next: ${nextShow[1]} at ${nextShow[0]}`;
       break;
     }
   }
-
-  if(currentShow){
-    document.getElementById("nowNext").textContent=`Now Playing: ${currentShow[1]} | Next: ${nextShow[1]} at ${nextShow[0]}`;
-  }
+  // if selected day is not today, hide now/next
+  if(selectedDay!==today) document.getElementById("nowNext").textContent="";
 }
 
-// tab clicks
+// Tab clicks
 document.querySelectorAll(".tab").forEach(tab=>{
   tab.addEventListener("click", e=>{
     e.preventDefault();
@@ -133,7 +135,7 @@ document.querySelectorAll(".tab").forEach(tab=>{
   });
 });
 
-// initialize
+// Init
 document.querySelector(`.tab[data-day="${selectedDay}"]`)?.classList.add("active");
 showDay(selectedDay);
 setInterval(updateNowNext,15000);
