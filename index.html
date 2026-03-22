@@ -14,8 +14,7 @@ body {
 }
 header { padding:10px; font-size:18px; text-shadow:0 0 5px #ff00cc,0 0 10px #ff00cc,0 0 20px #ff00cc; }
 .tabs { display:flex; justify-content:center; margin:10px 0; flex-wrap:wrap; }
-.tab {
-  padding:7px 14px; margin:2px; cursor:pointer; border:2px solid #ff00cc; border-radius:4px;
+.tab { padding:7px 14px; margin:2px; cursor:pointer; border:2px solid #ff00cc; border-radius:4px;
   font-size:17px; text-decoration:none; color:white; display:inline-block; position:relative;
 }
 .tab.active { background:#ff00cc; color:#000; }
@@ -25,17 +24,24 @@ header { padding:10px; font-size:18px; text-shadow:0 0 5px #ff00cc,0 0 10px #ff0
 .show-card {
   background:rgba(255,255,255,.05); border:2px solid #ff00cc; border-radius:6px;
   padding:4px; display:flex; flex-direction:column; align-items:center; min-height:130px;
-  text-align:center; opacity:1; transform:translateY(0);
+  text-align:center; transition:opacity .5s, transform .5s; opacity:0; transform:translateY(10px);
 }
 .show-card img { width:80px; height:80px; border-radius:50%; border:2px solid #ff00cc; object-fit:cover; margin-bottom:4px; }
 .show-card .time { font-size:10px; margin-bottom:2px; }
 .show-card .name { font-size:10px; margin:0; word-break:break-word; }
-.show-card.invisible { display:none; }
+
+/* ON AIR */
+.show-card.on-air { border-color:red; box-shadow:0 0 10px red,0 0 20px red; position:relative; }
+.show-card.on-air::before { content:"ON AIR"; position:absolute; top:4px; left:4px; font-size:16px; font-weight:bold; animation:flashText 1s infinite; }
+@keyframes flashText { 0%,100%{color:red;} 50%{color:white;} }
+
+.show-card.invisible { display:none; opacity:1; transform:translateY(0); }
 
 @media (min-width:1200px){ .schedule-grid{grid-template-columns:repeat(4,1fr);} }
 @media (min-width:900px) and (max-width:1199px){ .schedule-grid{grid-template-columns:repeat(3,1fr);} }
 @media (min-width:600px) and (max-width:899px){ .schedule-grid{grid-template-columns:repeat(2,1fr);} }
 @media (max-width:599px){ .schedule-grid{grid-template-columns:1fr;} }
+
 </style>
 </head>
 <body>
@@ -56,15 +62,16 @@ header { padding:10px; font-size:18px; text-shadow:0 0 5px #ff00cc,0 0 10px #ff0
 
 <script>
 // Helpers
-function placeholder(name){ 
-  if(name.toUpperCase()==="MARK WILLIAMS") return `https://ui-avatars.com/api/?name=MW&background=ff00cc&color=ffffff&size=128`; 
-  const initials = name.split(" ").map(n=>n[0]).join("").substring(0,2); 
+function placeholder(name){
+  if(name.toUpperCase()==="MARK WILLIAMS") return `https://ui-avatars.com/api/?name=MW&background=ff00cc&color=ffffff&size=128`;
+  const initials = name.split(" ").map(n=>n[0]).join("").substring(0,2);
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=ff00cc&color=ffffff&size=128`;
 }
-function getPresenterImage(name){ 
-  const fileName=name.toLowerCase().replace(/\s+/g,'-'); 
-  return `images/${fileName}.jpg`; 
+function getPresenterImage(name){
+  const fileName=name.toLowerCase().replace(/\s+/g,'-');
+  return `images/${fileName}.jpg`;
 }
+function toMinutes(hhmm){ const [h,m]=hhmm.split(":").map(Number); return h*60+m; }
 
 // Full schedule
 const schedule = {
@@ -82,7 +89,7 @@ const grid=document.getElementById("scheduleGrid");
 const allCards={};
 let selectedDay=weekdays[new Date().getDay()];
 
-// Render cards and show immediately
+// Render cards
 weekdays.forEach(day=>{
   allCards[day]=[];
   (schedule[day]||[]).forEach(show=>{
@@ -97,11 +104,21 @@ weekdays.forEach(day=>{
   });
 });
 
-// Show selected day
+// Show day + ON AIR logic
 function showDay(day){
-  selectedDay=day;
+  const now=new Date();
+  const currentMinutes=now.getHours()*60+now.getMinutes();
   weekdays.forEach(d=>allCards[d].forEach(c=>c.classList.add("invisible")));
-  allCards[day].forEach(c=>c.classList.remove("invisible"));
+  allCards[day].forEach((c,i)=>{
+    c.classList.remove("invisible");
+    c.classList.remove("on-air");
+    const show=schedule[day][i];
+    if(day===weekdays[now.getDay()]){
+      const start=toMinutes(show[0]);
+      const end=i+1<schedule[day].length?toMinutes(schedule[day][i+1][0]):1440;
+      if(currentMinutes>=start && currentMinutes<end) c.classList.add("on-air");
+    }
+  });
 }
 
 // Tab click events
@@ -117,6 +134,10 @@ document.querySelectorAll(".tab").forEach(tab=>{
 // Initialize
 document.querySelector(`.tab[data-day="${selectedDay}"]`)?.classList.add("active");
 showDay(selectedDay);
+
+// Live update every 15s
+setInterval(()=>showDay(selectedDay),15000);
+
 </script>
 </body>
 </html>
