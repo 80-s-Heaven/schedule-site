@@ -24,6 +24,12 @@ header {
   text-shadow:0 0 5px #ff00cc,0 0 10px #ff00cc,0 0 20px #ff00cc;
 }
 
+#nowNext {
+  margin:6px 0;
+  font-size:12px;
+  text-shadow:0 0 3px #00ffff;
+}
+
 .tabs {
   display:flex;
   justify-content:center;
@@ -135,6 +141,7 @@ header {
 <body>
 
 <header>80's Heaven – Weekly Schedule</header>
+<div id="nowNext"></div>
 
 <div class="tabs">
   <div class="tab" data-day="Sunday">Sunday</div>
@@ -149,9 +156,10 @@ header {
 <div id="scheduleGrid" class="schedule-grid"></div>
 
 <script>
-// Helpers
+/* Helpers */
 function placeholder(name){
-  const initials=name.split(" ").map(n=>n[0]).join("").substring(0,2);
+  if(name.toUpperCase() === "MARK WILLIAMS") return `https://ui-avatars.com/api/?name=MW&background=ff00cc&color=ffffff&size=128`;
+  const initials = name.split(" ").map(n=>n[0]).join("").substring(0,2);
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=ff00cc&color=ffffff&size=128`;
 }
 
@@ -165,8 +173,8 @@ function toMinutes(hhmm){
   return h*60+m;
 }
 
-// Schedule
-const schedule = {
+/* Schedule data */
+const schedule = { 
 "Saturday":[["00:00","NON STOP 80'S HEAVEN"],["08:00","NIK MARTIN"],["09:00","MARK WILLIAMS"],["11:00","NEALE JAMES"],["12:00","EMPEROR ROSKO"],["13:00","ADRIAN JUSTE"],["14:00","PAUL JORDAN"],["15:00","GRAHAM BANNERMAN"],["16:00","DIXIE PEACH"],["17:00","STEVE BLACKNELL"],["18:00","ROB DE MINK"],["19:00","MARK WILLIAMS"],["21:00","MIKE HOLLIS"],["22:00","NON STOP 80'S HEAVEN"]],
 "Sunday":[["00:00","NON STOP 80'S HEAVEN"],["09:00","MARK WILLIAMS"],["11:00","GAVIN MCCOY"],["12:00","DAVE ASHER"],["13:00","TONY WEST"],["14:00","OPAL BONFANTE"],["15:00","NINO FIRETTO"],["16:00","MARTIN BUCHANAN"],["17:00","HOWARD PEARCE"],["18:00","ALTON ANDREWS"],["19:00","MARK WILLIAMS"],["21:00","TONY BLEWITT"],["22:00","NON STOP 80'S HEAVEN"]],
 "Monday":[["00:00","NON STOP 80'S HEAVEN"],["07:00","MARK WILLIAMS"],["09:00","NON STOP 80'S HEAVEN"],["15:00","TIM SMITH"],["16:00","NIK MARTIN"],["17:00","GRAHAM BANNERMAN"],["18:00","NEALE JAMES"],["19:00","MARK WILLIAMS"],["21:00","NON STOP 80'S HEAVEN"]],
@@ -180,7 +188,7 @@ const weekdays=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Sat
 const grid=document.getElementById("scheduleGrid");
 const allCards={};
 
-// Render Cards
+/* Render Cards */
 weekdays.forEach(day=>{
   allCards[day]=[];
   schedule[day].forEach(show=>{
@@ -205,7 +213,7 @@ weekdays.forEach(day=>{
   });
 });
 
-// Show Day
+/* Show Day Function */
 function showDay(day){
   weekdays.forEach(d=>{
     allCards[d].forEach(c=>{
@@ -221,23 +229,56 @@ function showDay(day){
       c.style.transform="translateY(0)";
     },i*40);
   });
+
+  updateNowNext(day);
 }
 
-// Tabs
+/* Now / Next */
+function updateNowNext(selectedDay){
+  const now=new Date();
+  const todayName = selectedDay || weekdays[now.getDay()];
+  const currentMinutes=now.getHours()*60+now.getMinutes();
+  const shows=schedule[todayName];
+
+  let currentShow=null,nextShow=null;
+
+  shows.forEach((s,i)=>{
+    const start=toMinutes(s[0]);
+    const end=i+1<shows.length?toMinutes(shows[i+1][0]):1440;
+    if(currentMinutes>=start && currentMinutes<end){
+      currentShow=s;
+      nextShow=shows[i+1]||schedule[weekdays[(weekdays.indexOf(todayName)+1)%7]][0];
+    }
+  });
+
+  if(currentShow){
+    document.getElementById("nowNext").textContent=
+      `Now Playing: ${currentShow[1]} | Next: ${nextShow[1]} at ${nextShow[0]}`;
+  }
+
+  allCards[todayName].forEach(c=>c.classList.remove("on-air"));
+  const index=shows.findIndex(s=>s[0]===currentShow?.[0]);
+  if(index>=0) allCards[todayName][index].classList.add("on-air");
+}
+
+/* Tabs Click */
 document.querySelectorAll(".tab").forEach(tab=>{
   tab.addEventListener("click",()=>{
+    const day = tab.dataset.day;
     document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
     tab.classList.add("active");
-    showDay(tab.dataset.day);
+    showDay(day);
   });
 });
 
-// Auto select today
+/* Auto select today */
 const todayName=weekdays[new Date().getDay()];
-document.querySelector(`.tab[data-day="${todayName}"]`).classList.add("active");
+document.querySelector(`.tab[data-day="${todayName}"]`)?.classList.add("active");
 showDay(todayName);
+
+/* Live update every 15s */
+setInterval(()=>updateNowNext(),15000);
 
 </script>
 </body>
 </html>
-
