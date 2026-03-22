@@ -46,7 +46,6 @@ header { padding:10px; font-size:18px; text-shadow:0 0 5px #ff00cc,0 0 10px #ff0
 <div id="scheduleGrid" class="schedule-grid"></div>
 
 <script>
-// helpers
 function placeholder(name){ 
   if(name.toUpperCase()==="MARK WILLIAMS") return `https://ui-avatars.com/api/?name=MW&background=ff00cc&color=ffffff&size=128`; 
   const initials = name.split(" ").map(n=>n[0]).join("").substring(0,2); 
@@ -98,18 +97,29 @@ function updateNowNext(){
   const now=new Date();
   const today=weekdays[now.getDay()];
   allCards[selectedDay].forEach(c=>c.classList.remove("on-air"));
-  if(selectedDay!==today){ document.getElementById("nowNext").textContent=""; return; }
+  
+  if(selectedDay!==today){ 
+    document.getElementById("nowNext").textContent=""; 
+    return; 
+  }
+
   const shows=schedule[today];
   const minutes=now.getHours()*60+now.getMinutes();
   let currentShow=null,nextShow=null;
-  shows.forEach((s,i)=>{
-    const start=toMinutes(s[0]); const end=i+1<shows.length?toMinutes(shows[i+1][0]):1440;
-    if(minutes>=start && minutes<end){ currentShow=s; nextShow=shows[i+1]||["00:00","NON STOP 80'S HEAVEN"]; }
-  });
+  
+  for(let i=0;i<shows.length;i++){
+    const start=toMinutes(shows[i][0]);
+    const end=i+1<shows.length?toMinutes(shows[i+1][0]):1440;
+    if(minutes>=start && minutes<end){
+      currentShow=shows[i];
+      nextShow=shows[i+1]||["00:00","NON STOP 80'S HEAVEN"];
+      allCards[today][i].classList.add("on-air");
+      break;
+    }
+  }
+
   if(currentShow){
     document.getElementById("nowNext").textContent=`Now Playing: ${currentShow[1]} | Next: ${nextShow[1]} at ${nextShow[0]}`;
-    const idx=shows.findIndex(s=>s[0]===currentShow[0]);
-    if(idx>=0) allCards[today][idx].classList.add("on-air");
   }
 }
 
