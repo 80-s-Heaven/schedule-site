@@ -163,7 +163,10 @@ function placeholder(name){
 }
 
 function getPresenterImage(name){
-  const fileName=name.toLowerCase().replace(/\s+/g,'-');
+  const fileName = name.toLowerCase()
+                      .replace(/\s+/g,'-')
+                      .replace(/[’']/g,'')
+                      .replace(/[^a-z0-9\-]/g,''); 
   return `images/${fileName}.jpg`;
 }
 
@@ -172,7 +175,7 @@ function toMinutes(hhmm){
   return h*60+m;
 }
 
-// Schedule
+// Schedule data
 const schedule = {
 "Saturday":[["08:00","NIK MARTIN"],["09:00","SHAUN TILLEY"],["11:00","NEALE JAMES"],["12:00","EMPEROR ROSKO"],["13:00","ADRIAN JUSTE"],["14:00","PAUL JORDAN"],["15:00","GRAHAM BANNERMAN"],["16:00","DIXIE PEACH"],["17:00","STEVE BLACKNELL"],["18:00","ROB DE MINK"],["19:00","SHAUN TILLEY"],["21:00","MIKE HOLLIS"],["22:00","NON STOP 80'S HEAVEN"]],
 "Sunday":[["00:00","NON STOP 80'S HEAVEN"],["09:00","SHAUN TILLEY"],["11:00","GAVIN MCCOY"],["12:00","DAVE ASHER"],["13:00","TONY WEST"],["14:00","OPAL BONFANTE"],["15:00","NINO FIRETTO"],["16:00","MARTIN BUCHANAN"],["17:00","HOWARD PEARCE"],["18:00","ALTON ANDREWS"],["19:00","SHAUN TILLEY"],["21:00","TONY BLEWITT"],["22:00","NON STOP 80'S HEAVEN"]],
