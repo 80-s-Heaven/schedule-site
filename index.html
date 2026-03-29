@@ -66,7 +66,6 @@ header {
   margin:0 auto 10px auto;
 }
 
-/* Cards */
 .show-card {
   background:rgba(255,255,255,.05);
   border:2px solid #ff00cc;
@@ -104,7 +103,6 @@ header {
   word-break:break-word;
 }
 
-/* ON AIR */
 .show-card.on-air {
   border-color:red;
   box-shadow:0 0 10px red,0 0 20px red;
@@ -129,7 +127,6 @@ header {
   display:none;
 }
 
-/* Responsive columns */
 @media (min-width:1200px){ .schedule-grid{grid-template-columns:repeat(4,1fr);} }
 @media (min-width:900px) and (max-width:1199px){ .schedule-grid{grid-template-columns:repeat(3,1fr);} }
 @media (min-width:600px) and (max-width:899px){ .schedule-grid{grid-template-columns:repeat(2,1fr);} }
@@ -137,7 +134,6 @@ header {
 
 </style>
 </head>
-
 <body>
 
 <header>80's Heaven – Weekly Schedule</header>
@@ -162,12 +158,10 @@ function placeholder(name){
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=ff00cc&color=ffffff&size=128`;
 }
 
+// Fix for special chars in Non Stop 80's Heaven and Rosko
 function getPresenterImage(name){
-  const fileName = name.toLowerCase()
-                      .replace(/\s+/g,'-')
-                      .replace(/[’']/g,'')
-                      .replace(/[^a-z0-9\-]/g,''); 
-  return `images/${fileName}.jpg`;
+  const safeName = name.toLowerCase().replace(/[^a-z0-9]+/g,'-');
+  return `images/${safeName}.jpg`;
 }
 
 function toMinutes(hhmm){
@@ -175,7 +169,7 @@ function toMinutes(hhmm){
   return h*60+m;
 }
 
-// Schedule data
+// Full Schedule
 const schedule = {
 "Saturday":[["08:00","NIK MARTIN"],["09:00","SHAUN TILLEY"],["11:00","NEALE JAMES"],["12:00","EMPEROR ROSKO"],["13:00","ADRIAN JUSTE"],["14:00","PAUL JORDAN"],["15:00","GRAHAM BANNERMAN"],["16:00","DIXIE PEACH"],["17:00","STEVE BLACKNELL"],["18:00","ROB DE MINK"],["19:00","SHAUN TILLEY"],["21:00","MIKE HOLLIS"],["22:00","NON STOP 80'S HEAVEN"]],
 "Sunday":[["00:00","NON STOP 80'S HEAVEN"],["09:00","SHAUN TILLEY"],["11:00","GAVIN MCCOY"],["12:00","DAVE ASHER"],["13:00","TONY WEST"],["14:00","OPAL BONFANTE"],["15:00","NINO FIRETTO"],["16:00","MARTIN BUCHANAN"],["17:00","HOWARD PEARCE"],["18:00","ALTON ANDREWS"],["19:00","SHAUN TILLEY"],["21:00","TONY BLEWITT"],["22:00","NON STOP 80'S HEAVEN"]],
@@ -190,7 +184,7 @@ const weekdays=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Sat
 const grid=document.getElementById("scheduleGrid");
 const allCards={};
 
-// Render Cards
+// Render cards per day only
 weekdays.forEach(day=>{
   allCards[day]=[];
   schedule[day].forEach(show=>{
@@ -210,59 +204,40 @@ weekdays.forEach(day=>{
     name.textContent=show[1];
 
     card.append(time,img,name);
-    grid.appendChild(card);
     allCards[day].push(card);
   });
 });
 
-// Show Day
+// Show a specific day
 function showDay(day){
-  weekdays.forEach(d=>{
-    allCards[d].forEach(c=>{
-      c.classList.add("invisible");
-      c.classList.remove("on-air");
-    });
+  grid.innerHTML="";
+  allCards[day].forEach((card,i)=>{
+    grid.appendChild(card);
+    card.classList.remove("invisible");
+    setTimeout(()=>{ card.style.opacity=1; card.style.transform="translateY(0)"; },i*40);
+    card.classList.remove("on-air");
   });
-
-  allCards[day].forEach((c,i)=>{
-    c.classList.remove("invisible");
-    setTimeout(()=>{
-      c.style.opacity=1;
-      c.style.transform="translateY(0)";
-    },i*40);
-  });
-
   updateNowNext(day);
 }
 
-// Update ON AIR and Now Playing / Next
-function updateNowNext(selectedDay){
+// Now Playing / Next + ON AIR
+function updateNowNext(day){
   const now=new Date();
   const todayName=weekdays[now.getDay()];
   const currentMinutes=now.getHours()*60+now.getMinutes();
-  const shows=schedule[selectedDay];
-
-  let currentShow=null, nextShow=null;
-
+  const shows=schedule[day];
+  let current=null,next=null;
   shows.forEach((s,i)=>{
     const start=toMinutes(s[0]);
     const end=i+1<shows.length?toMinutes(shows[i+1][0]):1440;
-    if(currentMinutes>=start && currentMinutes<end && selectedDay===todayName){
-      currentShow=s;
-      nextShow=shows[i+1]||schedule[weekdays[(weekdays.indexOf(todayName)+1)%7]][0];
+    if(day===todayName && currentMinutes>=start && currentMinutes<end){
+      current=s;
+      next=shows[i+1]||schedule[weekdays[(weekdays.indexOf(day)+1)%7]][0];
     }
   });
-
-  if(currentShow){
-    document.getElementById("nowNext").textContent=
-      `Now Playing: ${currentShow[1]} | Next: ${nextShow[1]} at ${nextShow[0]}`;
-  } else {
-    document.getElementById("nowNext").textContent="Now Playing: – | Next: –";
-  }
-
-  allCards[selectedDay].forEach(c=>c.classList.remove("on-air"));
-  const index=shows.findIndex(s=>s[0]===currentShow?.[0]);
-  if(index>=0) allCards[selectedDay][index].classList.add("on-air");
+  document.getElementById("nowNext").textContent=current?`Now Playing: ${current[1]} | Next: ${next[1]} at ${next[0]}`:"Now Playing: – | Next: –";
+  const index=current?shows.findIndex(s=>s[0]===current[0]):-1;
+  if(index>=0) allCards[day][index].classList.add("on-air");
 }
 
 // Tabs
@@ -274,14 +249,13 @@ document.querySelectorAll(".tab").forEach(tab=>{
   });
 });
 
-// Auto select today
+// Auto show today
 const todayName=weekdays[new Date().getDay()];
 document.querySelector(`.tab[data-day="${todayName}"]`).classList.add("active");
 showDay(todayName);
 
-// Update ON AIR every 15s
+// Refresh ON AIR every 15s
 setInterval(()=>showDay(document.querySelector(".tab.active").dataset.day),15000);
-
 </script>
 </body>
 </html>
