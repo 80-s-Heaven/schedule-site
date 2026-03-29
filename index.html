@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -98,7 +98,7 @@ header {
   word-break:break-word;
 }
 
-/* ON AIR */
+/* ON AIR HIGHLIGHT */
 .show-card.on-air {
   border-color:red;
   box-shadow:0 0 10px red,0 0 20px red;
@@ -123,7 +123,7 @@ header {
   display:none;
 }
 
-/* Responsive columns */
+/* Responsive */
 @media (min-width:1200px){ .schedule-grid{grid-template-columns:repeat(4,1fr);} }
 @media (min-width:900px) and (max-width:1199px){ .schedule-grid{grid-template-columns:repeat(3,1fr);} }
 @media (min-width:600px) and (max-width:899px){ .schedule-grid{grid-template-columns:repeat(2,1fr);} }
@@ -160,15 +160,13 @@ function getPresenterImage(name){
   return `images/${fileName}.jpg`;
 }
 
-function toMinutes(hhmm){
-  const [h,m]=hhmm.split(":").map(Number);
+function toMinutes(time){
+  const [h,m]=time.split(":").map(Number);
   return h*60+m;
 }
 
-// Updated Schedule (SHAUN TILLEY replaces MARK WILLIAMS)
-// MARK WILLIAMS added Mon–Fri 09:00–10:00
+// SCHEDULE
 const schedule = {
-
 "Saturday":[
   ["00:00","NON STOP 80'S HEAVEN"],
   ["08:00","NIK MARTIN"],
@@ -267,7 +265,6 @@ const schedule = {
   ["20:00","SHAUN TILLEY"],
   ["22:00","NON STOP 80'S HEAVEN"]
 ]
-
 };
 
 const weekdays=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
@@ -315,6 +312,35 @@ function showDay(day){
       c.style.transform="translateY(0)";
     },i*40);
   });
+
+  highlightOnAir();
+}
+
+// Find and highlight current show
+function highlightOnAir(){
+  const now=new Date();
+  const dayName=weekdays[now.getDay()];
+  const minutesNow=now.getHours()*60+now.getMinutes();
+  const todaySchedule=schedule[dayName];
+
+  let currentIndex=-1;
+
+  for(let i=0;i<todaySchedule.length;i++){
+    const start=toMinutes(todaySchedule[i][0]);
+    const end=(i < todaySchedule.length-1) ? toMinutes(todaySchedule[i+1][0]) : 1440;
+
+    if(minutesNow>=start && minutesNow<end){
+      currentIndex=i;
+      break;
+    }
+  }
+
+  // Remove ON AIR from all cards
+  weekdays.forEach(d=>allCards[d].forEach(c=>c.classList.remove("on-air")));
+
+  if(currentIndex>=0){
+    allCards[dayName][currentIndex].classList.add("on-air");
+  }
 }
 
 // Tabs
@@ -330,6 +356,10 @@ document.querySelectorAll(".tab").forEach(tab=>{
 const todayName=weekdays[new Date().getDay()];
 document.querySelector(`.tab[data-day="${todayName}"]`).classList.add("active");
 showDay(todayName);
+highlightOnAir();
+
+// Update ON AIR every minute
+setInterval(highlightOnAir,60000);
 
 </script>
 </body>
