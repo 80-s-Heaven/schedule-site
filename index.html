@@ -153,7 +153,7 @@ header {
 <div id="scheduleGrid" class="schedule-grid"></div>
 
 <script>
-// Helpers
+// Helper Functions
 function placeholder(name){
   const initials=name.split(" ").map(n=>n[0]).join("").substring(0,2);
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=ff00cc&color=ffffff&size=128`;
@@ -169,7 +169,7 @@ function toMinutes(hhmm){
   return h*60+m;
 }
 
-// UPDATED SCHEDULE
+// Schedule Data
 const schedule = {
 "Saturday":[
   ["00:00","NON STOP 80'S HEAVEN"],
@@ -282,7 +282,10 @@ const schedule = {
 ]
 };
 
-const weekdays=["Saturday","Sunday","Monday","Tuesday","Wednesday","Thursday","Friday"];
+// -----------------------------
+// Initialize
+// -----------------------------
+const weekdays=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const grid=document.getElementById("scheduleGrid");
 const allCards={};
 
@@ -328,37 +331,36 @@ function showDay(day){
     },i*40);
   });
 
-  updateNowNext(day);
+  updateNowNext();
 }
 
-// Update Now/Next + ON AIR highlight
-function updateNowNext(selectedDay){
+// Update ON AIR and Now/Next
+function updateNowNext(){
   const now=new Date();
-  const nowDay=weekdays[now.getDay()];
-  const mins=now.getHours()*60+now.getMinutes();
-  const shows=schedule[selectedDay];
+  const todayName=weekdays[now.getDay()];
+  const currentMinutes=now.getHours()*60+now.getMinutes();
+  const shows=schedule[todayName];
 
-  let current=null, next=null;
+  let currentShow=null, nextShow=null;
 
   shows.forEach((s,i)=>{
     const start=toMinutes(s[0]);
     const end=i+1<shows.length?toMinutes(shows[i+1][0]):1440;
-    if(selectedDay===nowDay && mins>=start && mins<end){
-      current=s;
-      next=shows[i+1] || schedule[weekdays[(weekdays.indexOf(nowDay)+1)%7]][0];
+    if(currentMinutes>=start && currentMinutes<end){
+      currentShow=s;
+      nextShow=shows[i+1]||null;
     }
   });
 
-  if(current){
-    document.getElementById("nowNext").textContent=
-      `Now Playing: ${current[1]} | Next: ${next[1]} at ${next[0]}`;
-  } else {
-    document.getElementById("nowNext").textContent="Now Playing: – | Next: –";
-  }
+  if(!currentShow) currentShow=shows[shows.length-1];
+  if(!nextShow) nextShow=shows[0];
 
-  allCards[selectedDay].forEach(c=>c.classList.remove("on-air"));
-  const i=shows.findIndex(s=>s[0]===current?.[0]);
-  if(i>=0) allCards[selectedDay][i].classList.add("on-air");
+  document.getElementById("nowNext").textContent=
+    `Now Playing: ${currentShow[1]} | Next: ${nextShow[1]} at ${nextShow[0]}`;
+
+  allCards[todayName].forEach(c=>c.classList.remove("on-air"));
+  const index=shows.findIndex(s=>s[0]===currentShow[0]);
+  if(index>=0) allCards[todayName][index].classList.add("on-air");
 }
 
 // Tabs
@@ -370,12 +372,12 @@ document.querySelectorAll(".tab").forEach(tab=>{
   });
 });
 
-// Auto-select today
+// Auto select today
 const todayName=weekdays[new Date().getDay()];
 document.querySelector(`.tab[data-day="${todayName}"]`).classList.add("active");
 showDay(todayName);
 
-// Refresh ON AIR every 15s
+// Update ON AIR every 15s
 setInterval(()=>showDay(document.querySelector(".tab.active").dataset.day),15000);
 
 </script>
