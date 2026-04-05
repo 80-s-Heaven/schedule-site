@@ -141,13 +141,13 @@ header {
 <div id="nowNext">Now Playing: – | Next: –</div>
 
 <div class="tabs">
+  <div class="tab" data-day="Saturday">Saturday</div>
   <div class="tab" data-day="Sunday">Sunday</div>
   <div class="tab" data-day="Monday">Monday</div>
   <div class="tab" data-day="Tuesday">Tuesday</div>
   <div class="tab" data-day="Wednesday">Wednesday</div>
   <div class="tab" data-day="Thursday">Thursday</div>
   <div class="tab" data-day="Friday">Friday</div>
-  <div class="tab" data-day="Saturday">Saturday</div>
 </div>
 
 <div id="scheduleGrid" class="schedule-grid"></div>
@@ -169,18 +169,120 @@ function toMinutes(hhmm){
   return h*60+m;
 }
 
-// Schedule
+// UPDATED SCHEDULE
 const schedule = {
-"Saturday":[["00:00","NON STOP 80'S HEAVEN"],["08:00","NIK MARTIN"],["09:00","SHAUN TILLEY"],["11:00","NEALE JAMES"],["12:00","EMPEROR ROSKO"],["13:00","ADRIAN JUSTE"],["14:00","PAUL JORDAN"],["15:00","GRAHAM BANNERMAN"],["16:00","DIXIE PEACH"],["17:00","STEVE BLACKNELL"],["18:00","ROB DE MINK"],["19:00","SHAUN TILLEY"],["21:00","MIKE HOLLIS"],["22:00","NON STOP 80'S HEAVEN"]],
-"Sunday":[["00:00","NON STOP 80'S HEAVEN"],["09:00","SHAUN TILLEY"],["11:00","GAVIN MCCOY"],["12:00","DAVE ASHER"],["13:00","TONY WEST"],["14:00","OPAL BONFANTE"],["15:00","NINO FIRETTO"],["16:00","MARTIN BUCHANAN"],["17:00","HOWARD PEARCE"],["18:00","ALTON ANDREWS"],["19:00","SHAUN TILLEY"],["21:00","TONY BLEWITT"],["22:00","NON STOP 80'S HEAVEN"]],
-"Monday":[["00:00","NON STOP 80'S HEAVEN"],["07:00","SHAUN TILLEY"],["09:00","MARK WILLIAMS"],["10:00","NON STOP 80'S HEAVEN"],["15:00","TIM SMITH"],["16:00","NIK MARTIN"],["17:00","GRAHAM BANNERMAN"],["18:00","NEALE JAMES"],["19:00","SHAUN TILLEY"],["21:00","MARK WILLIAMS"],["22:00","NON STOP 80'S HEAVEN"]],
-"Tuesday":[["00:00","NON STOP 80'S HEAVEN"],["07:00","SHAUN TILLEY"],["09:00","MARK WILLIAMS"],["10:00","NON STOP 80'S HEAVEN"],["15:00","TONY BLEWITT"],["16:00","GAVIN MCCOY"],["17:00","DAVE ASHER"],["18:00","EMPEROR ROSKO"],["19:00","SHAUN TILLEY"],["21:00","MARK WILLIAMS"],["22:00","NON STOP 80'S HEAVEN"]],
-"Wednesday":[["00:00","NON STOP 80'S HEAVEN"],["07:00","SHAUN TILLEY"],["09:00","MARK WILLIAMS"],["10:00","NON STOP 80'S HEAVEN"],["15:00","MIKE HOLLIS"],["16:00","ADRIAN JUSTE"],["17:00","PAUL JORDAN"],["18:00","STEVE BLACKNELL"],["19:00","SHAUN TILLEY"],["21:00","MARK WILLIAMS"],["22:00","NON STOP 80'S HEAVEN"]],
-"Thursday":[["00:00","NON STOP 80'S HEAVEN"],["07:00","SHAUN TILLEY"],["09:00","MARK WILLIAMS"],["10:00","NON STOP 80'S HEAVEN"],["15:00","HOWARD PEARCE"],["16:00","TONY WEST"],["17:00","MARTIN BUCHANAN"],["18:00","DIXIE PEACH"],["19:00","SHAUN TILLEY"],["21:00","MARK WILLIAMS"],["22:00","NON STOP 80'S HEAVEN"]],
-"Friday":[["00:00","NON STOP 80'S HEAVEN"],["07:00","SHAUN TILLEY"],["09:00","MARK WILLIAMS"],["10:00","NON STOP 80'S HEAVEN"],["15:00","TIM SMITH"],["16:00","OPAL BONFANTE"],["17:00","NINO FIRETTO"],["18:00","ROB DE MINK"],["19:00","ALTON ANDREWS"],["20:00","SHAUN TILLEY"],["21:00","MARK WILLIAMS"],["22:00","NON STOP 80'S HEAVEN"]]
+"Saturday":[
+  ["00:00","NON STOP 80'S HEAVEN"],
+  ["07:00","TIM SMITH"],
+  ["08:00","SHAUN TILLEY"],
+  ["10:00","NEALE JAMES"],
+  ["11:00","PAUL BURNETT"],
+  ["12:00","ROSKO"],
+  ["13:00","ADRIAN JUSTE"],
+  ["14:00","PAUL JORDAN"],
+  ["15:00","GRAHAM BANNERMAN"],
+  ["16:00","DIXIE PEACH"],
+  ["17:00","STEVE BLACKNELL"],
+  ["18:00","ROB DE MINK"],
+  ["19:00","SHAUN TILLEY"],
+  ["21:00","MIKE HOLLIS"],
+  ["22:00","NON STOP 80'S HEAVEN"]
+],
+"Sunday":[
+  ["00:00","NON STOP 80'S HEAVEN"],
+  ["08:00","NIK MARTIN"],
+  ["09:00","SHAUN TILLEY"],
+  ["11:00","GAVIN MCCOY"],
+  ["12:00","DAVE ASHER"],
+  ["13:00","TONY WEST"],
+  ["14:00","OPAL BONFANTE"],
+  ["15:00","NINO FIRETTO"],
+  ["16:00","MARTIN BUCHANAN"],
+  ["17:00","HOWARD PEARCE"],
+  ["18:00","ALTON ANDREWS"],
+  ["19:00","SHAUN TILLEY"],
+  ["21:00","TONY BLEWITT"],
+  ["22:00","NON STOP 80'S HEAVEN"]
+],
+"Monday":[
+  ["00:00","NON STOP 80'S HEAVEN"],
+  ["07:00","SHAUN TILLEY"],
+  ["09:00","MARK WILLIAMS"],
+  ["10:00","NON STOP 80'S HEAVEN"],
+  ["13:00","TIM SMITH"],
+  ["14:00","STEVE BLACKNELL"],
+  ["15:00","ALTON ANDREWS"],
+  ["16:00","PAUL BURNETT"],
+  ["17:00","GRAHAM BANNERMAN"],
+  ["18:00","NEALE JAMES"],
+  ["19:00","SHAUN TILLEY"],
+  ["21:00","MARK WILLIAMS"],
+  ["22:00","NON STOP 80'S HEAVEN"]
+],
+"Tuesday":[
+  ["00:00","NON STOP 80'S HEAVEN"],
+  ["07:00","SHAUN TILLEY"],
+  ["09:00","MARK WILLIAMS"],
+  ["10:00","NON STOP 80'S HEAVEN"],
+  ["13:00","TONY BLEWITT"],
+  ["14:00","PAUL JORDAN"],
+  ["15:00","GAVIN MCCOY"],
+  ["16:00","MARTIN BUCHANAN"],
+  ["17:00","DAVE ASHER"],
+  ["18:00","ROSKO"],
+  ["19:00","SHAUN TILLEY"],
+  ["21:00","MARK WILLIAMS"],
+  ["22:00","NON STOP 80'S HEAVEN"]
+],
+"Wednesday":[
+  ["00:00","NON STOP 80'S HEAVEN"],
+  ["07:00","SHAUN TILLEY"],
+  ["09:00","MARK WILLIAMS"],
+  ["10:00","NON STOP 80'S HEAVEN"],
+  ["13:00","NIK MARTIN"],
+  ["14:00","MIKE HOLLIS"],
+  ["15:00","ADRIAN JUSTE"],
+  ["16:00","NEALE JAMES"],
+  ["17:00","ALTON ANDREWS"],
+  ["18:00","PAUL JORDAN"],
+  ["19:00","SHAUN TILLEY"],
+  ["21:00","MARK WILLIAMS"],
+  ["22:00","NON STOP 80'S HEAVEN"]
+],
+"Thursday":[
+  ["00:00","NON STOP 80'S HEAVEN"],
+  ["07:00","SHAUN TILLEY"],
+  ["09:00","MARK WILLIAMS"],
+  ["10:00","NON STOP 80'S HEAVEN"],
+  ["13:00","PAUL BURNETT"],
+  ["14:00","DIXIE PEACH"],
+  ["15:00","ALTON ANDREWS"],
+  ["16:00","MARTIN BUCHANAN"],
+  ["17:00","TONY WEST"],
+  ["18:00","PAUL JORDAN"],
+  ["19:00","SHAUN TILLEY"],
+  ["21:00","MARK WILLIAMS"],
+  ["22:00","NON STOP 80'S HEAVEN"]
+],
+"Friday":[
+  ["00:00","NON STOP 80'S HEAVEN"],
+  ["07:00","SHAUN TILLEY"],
+  ["09:00","MARK WILLIAMS"],
+  ["10:00","NON STOP 80'S HEAVEN"],
+  ["12:00","OPAL BONFANTE"],
+  ["13:00","PAUL BURNETT"],
+  ["14:00","MARTIN BUCHANAN"],
+  ["15:00","HOWARD PEARCE"],
+  ["16:00","NEALE JAMES"],
+  ["17:00","NINO FIRETTO"],
+  ["18:00","ROB DE MINK"],
+  ["19:00","SHAUN TILLEY"],
+  ["21:00","MARK WILLIAMS"],
+  ["22:00","NON STOP 80'S HEAVEN"]
+]
 };
 
-const weekdays=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const weekdays=["Saturday","Sunday","Monday","Tuesday","Wednesday","Thursday","Friday"];
 const grid=document.getElementById("scheduleGrid");
 const allCards={};
 
@@ -229,34 +331,34 @@ function showDay(day){
   updateNowNext(day);
 }
 
-// Update ON AIR and Now Playing / Next
+// Update Now/Next + ON AIR highlight
 function updateNowNext(selectedDay){
   const now=new Date();
-  const todayName=weekdays[now.getDay()];
-  const currentMinutes=now.getHours()*60+now.getMinutes();
+  const nowDay=weekdays[now.getDay()];
+  const mins=now.getHours()*60+now.getMinutes();
   const shows=schedule[selectedDay];
 
-  let currentShow=null, nextShow=null;
+  let current=null, next=null;
 
   shows.forEach((s,i)=>{
     const start=toMinutes(s[0]);
     const end=i+1<shows.length?toMinutes(shows[i+1][0]):1440;
-    if(currentMinutes>=start && currentMinutes<end && selectedDay===todayName){
-      currentShow=s;
-      nextShow=shows[i+1]||schedule[weekdays[(weekdays.indexOf(todayName)+1)%7]][0];
+    if(selectedDay===nowDay && mins>=start && mins<end){
+      current=s;
+      next=shows[i+1] || schedule[weekdays[(weekdays.indexOf(nowDay)+1)%7]][0];
     }
   });
 
-  if(currentShow){
+  if(current){
     document.getElementById("nowNext").textContent=
-      `Now Playing: ${currentShow[1]} | Next: ${nextShow[1]} at ${nextShow[0]}`;
+      `Now Playing: ${current[1]} | Next: ${next[1]} at ${next[0]}`;
   } else {
     document.getElementById("nowNext").textContent="Now Playing: – | Next: –";
   }
 
   allCards[selectedDay].forEach(c=>c.classList.remove("on-air"));
-  const index=shows.findIndex(s=>s[0]===currentShow?.[0]);
-  if(index>=0) allCards[selectedDay][index].classList.add("on-air");
+  const i=shows.findIndex(s=>s[0]===current?.[0]);
+  if(i>=0) allCards[selectedDay][i].classList.add("on-air");
 }
 
 // Tabs
@@ -268,12 +370,12 @@ document.querySelectorAll(".tab").forEach(tab=>{
   });
 });
 
-// Auto select today
+// Auto-select today
 const todayName=weekdays[new Date().getDay()];
 document.querySelector(`.tab[data-day="${todayName}"]`).classList.add("active");
 showDay(todayName);
 
-// Update ON AIR every 15s
+// Refresh ON AIR every 15s
 setInterval(()=>showDay(document.querySelector(".tab.active").dataset.day),15000);
 
 </script>
